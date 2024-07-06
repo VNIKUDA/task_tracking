@@ -17,5 +17,20 @@
                 </li>
             {% endfor %}
         </ul>
+
+        <div class="container my-4 d-flex justify-content-center">
+            <div class="d-flex align-items-center flex-column">
+                <p>Сторінка <b>{{page_obj.number}}</b> з {{page_obj.paginator.num_pages}}.</p>
+                <div class="button-group">
+                    {% if page_obj.has_previous %}
+                        <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}"><< Попередня</a>
+                    {% endif %}
+
+                    {% if page_obj.has_next %}
+                        <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}">Наступна >></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
