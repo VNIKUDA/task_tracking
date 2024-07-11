@@ -4,10 +4,11 @@
 <div class="container mt-3">
     <form method="post">
         {% csrf_token %}
-        <h2>Ви впевнені що хочете видалити це завдання?</h2>
+        <h2>Видалення завдання</h2>
+        <p>Ви впевнені що хочете видалити завдання <b>"{{task.title}}"</b>?</p>
         <div class="button-group my-4">
-            <a href="{% url 'tasks:task-detail' object.pk %}" class="btn btn-primary">Відмінити</a>
             <button type="submit" class="btn btn-danger">Видалити</button>
+            <a href="{% url 'tasks:task-detail' object.pk %}" class="btn btn-secondary">Назад до завдання</a>
         </div>
         
     </form>

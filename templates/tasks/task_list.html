@@ -2,18 +2,40 @@
 
 {% block content%}
     <div class="container mt-3">
-        <h2>Список завдань</h2>
-        <a href="{% url 'tasks:task-create' %}" class="btn btn-primary mb-3">Додати завдання</a>
+        <h2 class="mb-3">Список завдань</h2>
+        <a class="btn btn-sm btn-primary w-auto mb-1" data-bs-toggle="collapse" href="#filter-form" role="button" aria-expanded="false" aria-controls="filter-form">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+                <path d="M1.5 1.5A.5.5  0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"></path>
+            </svg>
+            Фільтрувати
+        </a> 
+        <div class="collapse mb-1" id="filter-form">
+            <!-- <div class="card card-body">
+            Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+            </div> -->
+            <form action="" method="get" class="form-control">
+                <div class="d-flex flex-row gap-2">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-sm btn-success">Застосувати</button>
+            </form>
+        </div>      
         <ul class="list-group">
             {% for task in tasks %}
-                <li class="list-group-item">
-                    <a href="{% url 'tasks:task-detail' task.pk %}">{{task.title}}</a>
-                    <span class="badge bg-primary">{{task.status}}</span>
-                    <span class="badge bg-secondary">{{task.priority}}</span>
+                <li class="list-group-item d-flex justify-content-between">
+                    <div>
+                        <a href="{% url 'tasks:task-detail' task.pk %}" class="link">{{task.title}}</a>
+                        <span class="badge bg-primary">{{task.status}}</span>
+                        <span class="badge bg-secondary">{{task.priority}}</span>
+                    </div>
+                    <form action="{% url 'tasks:task-complete' task.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning">Позначити як виконане</button>
+                    </form>
                 </li>
             {% empty %}
                 <li class="list-group-item">
-                    Завдання не знайдено.
+                    Завдань не знайдено.
                 </li>
             {% endfor %}
         </ul>
