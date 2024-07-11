@@ -68,10 +68,36 @@ class TaskDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
 
 
 class TaskCompleteView(LoginRequiredMixin, UserIsOwnerMixin, View):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         task = self.get_object()
 
         task.status = "done"
+        task.save()
+
+        return HttpResponseRedirect(reverse_lazy("tasks:task-list"))
+    
+    def get_object(self):
+        task_id = self.kwargs.get("pk")
+        return get_object_or_404(models.Task, pk=task_id)
+    
+class TaskInProgressView(LoginRequiredMixin, UserIsOwnerMixin, View):
+    def get(self, request, *args, **kwargs):
+        task = self.get_object()
+
+        task.status = "in_progress"
+        task.save()
+
+        return HttpResponseRedirect(reverse_lazy("tasks:task-list"))
+    
+    def get_object(self):
+        task_id = self.kwargs.get("pk")
+        return get_object_or_404(models.Task, pk=task_id)
+    
+class TaskToDoView(LoginRequiredMixin, UserIsOwnerMixin, View):
+    def get(self, request, *args, **kwargs):
+        task = self.get_object()
+
+        task.status = "todo"
         task.save()
 
         return HttpResponseRedirect(reverse_lazy("tasks:task-list"))
