@@ -5,6 +5,15 @@
     <p>{{task.description}}</p>
     <p>Статус: <span class="badge bg-primary">{{task.status}}</span></p>
     <p>Пріорітет: <span class="badge bg-secondary">{{task.priority}}</span></p>
+    <p>Термін до: 
+    <span class="badge text-bg-secondary">
+    {% if task.due_date %}    
+        {{task.due_date}}
+    {% else %}
+        None
+    {% endif %}
+    </span>
+    </p>
     <a href="{% url 'tasks:task-update' task.pk %}" class="btn btn-warning">Редагувати</a>
     <a href="{% url 'tasks:task-delete' task.pk %}" class="btn btn-danger">Видалити</a>
 </div>

@@ -10,14 +10,12 @@
             Фільтрувати
         </a> 
         <div class="collapse mb-1" id="filter-form">
-            <!-- <div class="card card-body">
-            Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
-            </div> -->
             <form action="" method="get" class="form-control bg-light">
                 <div class="d-flex flex-row gap-2">
                     {{ form.as_p }}
                 </div>
                 <button type="submit" class="btn btn-sm btn-success">Застосувати</button>
+                <a class="btn btn-sm btn-primary" href="{% url 'tasks:task-list' %}">Очистити</a>
             </form>
         </div>      
         <ul class="list-group">
@@ -28,24 +26,20 @@
                         <span class="badge bg-primary">{{task.status}}</span>
                         <span class="badge bg-secondary">{{task.priority}}</span>
                     </div>
-                    <!-- <form action="{% url 'tasks:task-complete' task.pk %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-warning">Позначити як виконане</button>
-                    </form> -->
                     <div class="dropdown">
                         <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Позначити як
+                          Встановити статус
                         </button>
-                        <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="{% url 'tasks:task-to-do' task.pk %}">To do</a></li>
-                          <li><a class="dropdown-item" href="{% url 'tasks:task-in-progress' task.pk %}">In progress</a></li>
-                          <li><a class="dropdown-item" href="{% url 'tasks:task-complete' task.pk %}">Done</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a class="dropdown-item" href="{% url 'tasks:task-to-do' task.pk %}?{{filters}}page={{page_obj.number}}">To do</a></li>
+                          <li><a class="dropdown-item" href="{% url 'tasks:task-in-progress' task.pk %}?{{filters}}page={{page_obj.number}}">In progress</a></li>
+                          <li><a class="dropdown-item" href="{% url 'tasks:task-complete' task.pk %}?{{filters}}page={{page_obj.number}}">Done</a></li>
                         </ul>
                     </div>
                 </li>
             {% empty %}
-                <li class="list-group-item">
-                    Завдань не знайдено.
+                <li class="list-group-item d-flex justify-content-center">
+                    <span>Завдань не знайдено.</span>
                 </li>
             {% endfor %}
         </ul>
@@ -55,11 +49,11 @@
                 <p>Сторінка <b>{{page_obj.number}}</b> з {{page_obj.paginator.num_pages}}.</p>
                 <div class="button-group">
                     {% if page_obj.has_previous %}
-                        <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}"><< Попередня</a>
+                        <a class="btn btn-secondary" href="?{{filters}}page={{ page_obj.previous_page_number }}"><< Попередня</a>
                     {% endif %}
 
                     {% if page_obj.has_next %}
-                        <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}">Наступна >></a>
+                        <a class="btn btn-secondary" href="?{{filters}}page={{ page_obj.next_page_number }}">Наступна >></a>
                     {% endif %}
                 </div>
             </div>

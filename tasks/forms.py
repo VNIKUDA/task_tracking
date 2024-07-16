@@ -34,8 +34,15 @@ class TaskFilterForm(forms.Form):
     status = forms.ChoiceField(choices=STATUS_CHOICES, required=False, label="Статус")
     priority = forms.ChoiceField(choices=PRIORITY_CHOICES, required=False, label="Пріорітет")
 
+    date_input = forms.DateInput({"type": "date"})
+
+    from_date = forms.DateField(required=False, label="Термін з", widget=date_input)
+    to_date = forms.DateField(required=False, label="Термін по", widget=date_input)
+
     def __init__(self, *args, **kwargs):
         super(TaskFilterForm, self).__init__(*args, **kwargs)
 
         self.fields["status"].widget.attrs.update({"class": "form-control"})
         self.fields["priority"].widget.attrs.update({"class": "form-control"})
+        self.fields["from_date"].widget.attrs.update({"class": "form-control"})
+        self.fields["to_date"].widget.attrs.update({"class": "form-control"})

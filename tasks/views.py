@@ -1,8 +1,9 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
+import datetime
 from tasks.forms import TaskForm, TaskFilterForm
 from tasks.mixins import UserIsOwnerMixin
 from tasks import models
@@ -14,12 +15,26 @@ class TaskListView(ListView):
     template_name = "tasks/task_list.html"
     paginate_by = 7
 
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         queryset = super().get_queryset()
 
         status = self.request.GET.get("status", "")
         priority = self.request.GET.get("priority", "")
+        from_date = self.request.GET.get("from_date", "")
+        to_date = self.request.GET.get("to_date", "")
 
+        # Застосувати фільтри по терміну
+        if from_date:
+            from_date = datetime.date.fromisoformat(from_date)
+            queryset = queryset.filter(due_date__gte=from_date)
+        if to_date:
+            to_date = datetime.date.fromisoformat(to_date)
+            queryset = queryset.filter(due_date__lte=to_date)
+
+        # Застосувати фільтри по статусу і пріорітету
         if status:
             queryset = queryset.filter(status=status)
         if priority:
@@ -30,6 +45,15 @@ class TaskListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = TaskFilterForm(self.request.GET)
+
+        get_data = dict(self.request.GET.items())
+        if "page" in get_data.keys():
+            del get_data["page"]
+
+        filters = ""
+        for filter, value in get_data.items():
+            filters += f"{filter}={value}&"
+        context["filters"] = filters
 
         return context
 
@@ -73,8 +97,10 @@ class TaskCompleteView(LoginRequiredMixin, UserIsOwnerMixin, View):
 
         task.status = "done"
         task.save()
+        
+        body_args = "?" + "".join([f"{key}={value}&" for key, value in request.GET.items()])[:-1]
 
-        return HttpResponseRedirect(reverse_lazy("tasks:task-list"))
+        return HttpResponseRedirect(reverse_lazy("tasks:task-list")+body_args)
     
     def get_object(self):
         task_id = self.kwargs.get("pk")
@@ -87,7 +113,9 @@ class TaskInProgressView(LoginRequiredMixin, UserIsOwnerMixin, View):
         task.status = "in_progress"
         task.save()
 
-        return HttpResponseRedirect(reverse_lazy("tasks:task-list"))
+        body_args = "?" + "".join([f"{key}={value}&" for key, value in request.GET.items()])[:-1]
+
+        return HttpResponseRedirect(reverse_lazy("tasks:task-list")+body_args)
     
     def get_object(self):
         task_id = self.kwargs.get("pk")
@@ -100,7 +128,9 @@ class TaskToDoView(LoginRequiredMixin, UserIsOwnerMixin, View):
         task.status = "todo"
         task.save()
 
-        return HttpResponseRedirect(reverse_lazy("tasks:task-list"))
+        body_args = "?" + "".join([f"{key}={value}&" for key, value in request.GET.items()])[:-1]
+
+        return HttpResponseRedirect(reverse_lazy("tasks:task-list")+body_args)
     
     def get_object(self):
         task_id = self.kwargs.get("pk")
