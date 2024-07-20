@@ -39,13 +39,16 @@ class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="comments")
     text = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.text
 
     def get_absolute_url(self):
         return self.task.get_absolute_url()
+    
+    class Meta:
+        ordering = ["-created_at"]
     
 class Like(models.Model):
     task = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="likes")

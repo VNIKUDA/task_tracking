@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-3">
+    <h2>Оновлення коментаря</h2>
+    <form action="" method="post" class="form-control my-3 bg-light">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit" class="btn btn-warning">Оновити</button>
+        <a href="{{comment.get_absolute_url}}" class="btn btn-secondary">Назад до завдання</a>
+    </form>
+</div>
+{% endblock %}

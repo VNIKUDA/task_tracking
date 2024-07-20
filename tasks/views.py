@@ -165,7 +165,7 @@ class TaskToDoView(LoginRequiredMixin, UserIsOwnerMixin, View):
         return get_object_or_404(models.Task, pk=task_id)
     
 
-class CommentUpdateView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
+class CommentUpdateView(LoginRequiredMixin, UpdateView):
     model = models.Comment
     form_class = CommentForm
     template_name = "tasks/comment_update.html"

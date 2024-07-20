@@ -55,3 +55,6 @@ class CommentForm(forms.ModelForm):
 
         for field in self.fields:
             self.fields[field].widget.attrs["class"] = "form-control"
+
+        self.fields["text"].widget.attrs["rows"] = "3"
+        self.fields["text"].label = "Текст"
