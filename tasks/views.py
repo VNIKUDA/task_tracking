@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 import datetime
-from tasks.forms import TaskForm, TaskFilterForm
+from tasks.forms import TaskForm, TaskFilterForm, CommentForm
 from tasks.mixins import UserIsOwnerMixin
 from tasks import models
 
@@ -66,11 +66,31 @@ class TaskListView(ListView):
         return context
 
 
-class TaskDetailView(DetailView):
+class TaskDetailView(LoginRequiredMixin, DetailView):
     model = models.Task
     context_object_name = "task"
     template_name = "tasks/task_detail.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task = self.get_object()
+
+        context["comments"] = models.Comment.objects.filter(task=task)
+        context["form"] = CommentForm()
+
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        form = CommentForm(request.POST)
+        task = self.get_object()
+
+        if form.is_valid():
+            form.instance.task = task
+            form.instance.author = self.request.user
+
+            form.save()
+
+        return redirect(reverse_lazy("tasks:task-detail", kwargs={"pk": task.id}))
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = models.Task
@@ -143,3 +163,21 @@ class TaskToDoView(LoginRequiredMixin, UserIsOwnerMixin, View):
     def get_object(self):
         task_id = self.kwargs.get("pk")
         return get_object_or_404(models.Task, pk=task_id)
+    
+
+class CommentUpdateView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
+    model = models.Comment
+    form_class = CommentForm
+    template_name = "tasks/comment_update.html"
+    context_object_name = "comment"
+
+class CommentDeleteView(LoginRequiredMixin, DeleteView):
+    model = models.Comment
+    template_name = "tasks/comment_delete.html"
+    context_object_name = "comment"
+
+    def get_success_url(self):
+        comment = self.get_object()
+        task = comment.task
+
+        return reverse_lazy("tasks:task-detail", kwargs={"pk": task.id})

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <form action="" method="post">
+        {% csrf_token %}
+        <h2>Видалення коментаря</h2>
+        <p>Ви впевнені що хочете видалити коментар?</p>
+        <div class="button-group my-4">
+            <button type="submit" class="btn btn-danger">Видалити</button>
+            <a href="{% url 'tasks:task-detail' comment.task.pk %}" class="btn btn-secondary">Назад до завдання</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
