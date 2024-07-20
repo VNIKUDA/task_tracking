@@ -40,7 +40,7 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <!-- Якщо користувас залогінен -->
                         {% if request.user.is_authenticated %}
-                            <li><a class="dropdown-item" href="#">Аккаунт</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:account' request.user.pk %}">Аккаунт</a></li>
                             <li><a class="dropdown-item" href="{% url 'users:logout' %}">Вихід</a></li>
                         <!-- Якщо користувач не залогінен -->
                         {% else %}

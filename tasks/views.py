@@ -21,6 +21,7 @@ class TaskListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
+        # ЕТАП ФІЛЬТРАЦІЇ ЗАВДАНЬ
         status = self.request.GET.get("status", "")
         priority = self.request.GET.get("priority", "")
         from_date = self.request.GET.get("from_date", "")
@@ -39,6 +40,13 @@ class TaskListView(ListView):
             queryset = queryset.filter(status=status)
         if priority:
             queryset = queryset.filter(priority=priority)
+
+        # ЕТАП СОРТУВАННЯ ЗАВДАНЬ
+        sort = self.request.GET.get("sort", "")
+
+        # Розвернути список завдань якщо сортування встановлено "oldest"
+        if sort == "oldest":
+            queryset = queryset.reverse()
 
         return queryset
     

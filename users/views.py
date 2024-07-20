@@ -2,8 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from users.forms import RegisterForm, LoginForm
 from django.contrib.auth.models import User
+from django.views.generic import DetailView
 
 # Create your views here.
+class UserDetailView(DetailView):
+    model = User
+    context_object_name = "user"
+    template_name = "users/account.html"
+
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -20,7 +26,7 @@ def register_view(request):
     else:
         form = RegisterForm()
 
-    return render(request, "registration/register.html", context={"form": form})
+    return render(request, "users/register.html", context={"form": form})
 
 def login_view(request):
     if request.method == "POST":
@@ -40,7 +46,7 @@ def login_view(request):
     else:
         form = LoginForm()
 
-    return render(request, "registration/login.html", context={"form": form})
+    return render(request, "users/login.html", context={"form": form})
 
 def logout_view(request):
     logout(request)

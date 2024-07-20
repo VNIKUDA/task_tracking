@@ -23,8 +23,10 @@ class Task(models.Model):
     due_date = models.DateField(null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
 
+    created = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
         return self.title
     
     class Meta:
-        ordering = ["-due_date"]
+        ordering = ["-due_date", "-created", ]

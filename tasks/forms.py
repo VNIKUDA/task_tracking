@@ -42,7 +42,5 @@ class TaskFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(TaskFilterForm, self).__init__(*args, **kwargs)
 
-        self.fields["status"].widget.attrs.update({"class": "form-control"})
-        self.fields["priority"].widget.attrs.update({"class": "form-control"})
-        self.fields["from_date"].widget.attrs.update({"class": "form-control"})
-        self.fields["to_date"].widget.attrs.update({"class": "form-control"})
+        for field in self.fields:
+            self.fields[field].widget.attrs["class"] = "form-control"
