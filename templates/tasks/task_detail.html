@@ -30,7 +30,7 @@
             <button type="submit" class="btn btn-success">Створити</button>
         </form>
         {% for comment in comments %}
-            <div class="card w-25 my-3">
+            <div class="card w-25 my-3" id="{{comment.id}}">
                 <div class="card-header text-bg-info d-flex align-items-center justify-content-between">
                     <div class="d-flex flex-column">
                         <span class="h5 d-flex align-items-center gap-2">
@@ -46,19 +46,30 @@
                         </h6>
                     </div>
 
-                    <div class="dropend dropend-right">
-                        <button type="button" class="btn w-auto" data-bs-toggle="dropdown" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-                            </svg>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'tasks:comment-update' comment.pk %}">Редагувати</a></li>
-                            <li><a class="dropdown-item" href="{% url 'tasks:comment-delete' comment.pk %}">Видалити</a></li>
-                        </ul>
+                    <div class="btn-group">
+                        <form action="{% url 'tasks:comment-like' comment.pk %}" method="post" class="d-flex align-items-center flex-column">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+                                </svg>
+                            </button>
+                            <span style="font-size: x-small;">{{comment.likes.all|length}}</span>
+                            
+                        </form>
 
+                        <div class="dropend dropend-right">
+                            <button type="button" class="btn btn-sm w-auto" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                                    <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'tasks:comment-update' comment.pk %}">Редагувати</a></li>
+                                <li><a class="dropdown-item" href="{% url 'tasks:comment-delete' comment.pk %}">Видалити</a></li>
+                            </ul>
+                        </div>
                     </div>
-                    
                 </div>
                 
                 <div class="card-body">

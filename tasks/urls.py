@@ -11,8 +11,9 @@ urlpatterns = [
     path("<int:pk>/to-do/", views.TaskToDoView.as_view(), name="task-to-do"),
     path("<int:pk>/in-progress/", views.TaskInProgressView.as_view(), name="task-in-progress"),
 
-    path("comments/<int:pk>/update", views.CommentUpdateView.as_view(), name="comment-update"),
+    path("comments/<int:pk>/update/", views.CommentUpdateView.as_view(), name="comment-update"),
     path("comments/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment-delete"),
+    path("comments/<int:pk>/like/", views.CommentLikeView.as_view(), name="comment-like")
 ]
 
 app_name = "tasks"

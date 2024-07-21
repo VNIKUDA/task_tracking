@@ -22,7 +22,7 @@ class Task(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="todo")
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default="medium")
     due_date = models.DateField(null=True, blank=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
 
     created = models.DateTimeField(auto_now_add=True)
     
@@ -51,12 +51,12 @@ class Comment(models.Model):
         ordering = ["-created_at"]
     
 class Like(models.Model):
-    task = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="likes")
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="likes")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="like_comments")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.task.title, self.author
+        return f"{self.author}"
     
     class Meta:
-        unique_together = ("task", "author")
+        unique_together = ("comment", "author")

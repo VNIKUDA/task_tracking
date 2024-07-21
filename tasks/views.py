@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 import datetime
 from tasks.forms import TaskForm, TaskFilterForm, CommentForm
 from tasks.mixins import UserIsOwnerMixin
@@ -75,7 +76,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         task = self.get_object()
 
-        context["comments"] = models.Comment.objects.filter(task=task)
+        context["comments"] = models.Comment.objects.filter(task=task).annotate(count=Count("likes")).order_by("-count", "-created_at")
         context["form"] = CommentForm()
 
         return context
@@ -165,13 +166,19 @@ class TaskToDoView(LoginRequiredMixin, UserIsOwnerMixin, View):
         return get_object_or_404(models.Task, pk=task_id)
     
 
-class CommentUpdateView(LoginRequiredMixin, UpdateView):
+class CommentUpdateView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
     model = models.Comment
     form_class = CommentForm
     template_name = "tasks/comment_update.html"
     context_object_name = "comment"
 
-class CommentDeleteView(LoginRequiredMixin, DeleteView):
+    def get_success_url(self):
+        comment = self.get_object()
+        task = comment.task
+
+        return reverse_lazy("tasks:task-detail", kwargs={"pk": task.id}) + f"#{comment.pk}"
+
+class CommentDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
     model = models.Comment
     template_name = "tasks/comment_delete.html"
     context_object_name = "comment"
@@ -181,3 +188,29 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
         task = comment.task
 
         return reverse_lazy("tasks:task-detail", kwargs={"pk": task.id})
+
+class CommentLikeView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        comment = self.get_object()
+
+        print(comment.likes.all())
+
+        try:
+            like = models.Like.objects.get(comment=comment, author=request.user)
+            like.delete()
+
+            return HttpResponseRedirect(reverse_lazy("tasks:task-detail", kwargs={"pk": comment.task.pk}) + f"#{comment.pk}")
+        
+        except models.Like.DoesNotExist:
+            like = models.Like(
+                comment=comment,
+                author=request.user
+            )
+            like.save()
+
+            return HttpResponseRedirect(reverse_lazy("tasks:task-detail", kwargs={"pk": comment.task.pk}) + f"#{comment.pk}")
+
+
+    def get_object(self):
+        comment_id = self.kwargs.get("pk")
+        return get_object_or_404(models.Comment, pk=comment_id)
