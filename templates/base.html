@@ -41,7 +41,12 @@
                         <!-- Якщо користувас залогінен -->
                         {% if request.user.is_authenticated %}
                             <li><a class="dropdown-item" href="{% url 'users:account' request.user.pk %}">Аккаунт</a></li>
-                            <li><a class="dropdown-item" href="{% url 'users:logout' %}">Вихід</a></li>
+                            <li>
+                                <form action="{% url 'users:logout' %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item" type="submit">Вихід</button>
+                                </form>
+                            </li>
                         <!-- Якщо користувач не залогінен -->
                         {% else %}
                             <li><a class="dropdown-item" href="{% url 'users:login' %}">Вхід</a></li>
