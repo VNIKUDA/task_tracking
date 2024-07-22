@@ -33,7 +33,7 @@ class Task(models.Model):
         return reverse("tasks:task-detail", kwargs={"pk": self.pk})
     
     class Meta:
-        ordering = ["-due_date", "-created", ]
+        ordering = ["-due_date", "-created"]
 
 class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="comments")

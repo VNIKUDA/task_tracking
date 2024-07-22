@@ -75,8 +75,15 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         task = self.get_object()
+        user = self.request.user
 
-        context["comments"] = models.Comment.objects.filter(task=task).annotate(count=Count("likes")).order_by("-count", "-created_at")
+        comments = models.Comment.objects.filter(task=task).annotate(count=Count("likes")).order_by("-count", "-created_at")
+        context["comments"] = comments
+
+        context["liked_comments"] = []
+        if user.is_authenticated:
+            context["liked_comments"] = [comment for comment in comments if any(like in comment.likes.all() for like in user.like_comments.all())]
+        
         context["form"] = CommentForm()
 
         return context
@@ -193,13 +200,11 @@ class CommentLikeView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         comment = self.get_object()
 
-        print(comment.likes.all())
-
         try:
             like = models.Like.objects.get(comment=comment, author=request.user)
             like.delete()
 
-            return HttpResponseRedirect(reverse_lazy("tasks:task-detail", kwargs={"pk": comment.task.pk}) + f"#{comment.pk}")
+            return HttpResponseRedirect(reverse_lazy("tasks:task-detail", kwargs={"pk": comment.task.pk}))
         
         except models.Like.DoesNotExist:
             like = models.Like(
@@ -208,7 +213,7 @@ class CommentLikeView(LoginRequiredMixin, View):
             )
             like.save()
 
-            return HttpResponseRedirect(reverse_lazy("tasks:task-detail", kwargs={"pk": comment.task.pk}) + f"#{comment.pk}")
+            return HttpResponseRedirect(reverse_lazy("tasks:task-detail", kwargs={"pk": comment.task.pk}))
 
 
     def get_object(self):
