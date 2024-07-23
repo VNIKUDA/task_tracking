@@ -1,3 +1,4 @@
+from typing import Any
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -6,15 +7,15 @@ from django.urls import reverse
 class Task(models.Model):
 
     STATUS_CHOICES = (
-        ("todo", "To Do"),
-        ("in_progress", "In Progress"),
-        ("done", "Done")
+        ("todo", "Назначено"),
+        ("in_progress", "В процесі"),
+        ("done", "Виконано")
     )
 
     PRIORITY_CHOICES = (
-        ("low", "Low"),
-        ("medium", "Medium"),
-        ("high", "High")
+        ("low", "Низький"),
+        ("medium", "Середній"),
+        ("high", "Високий")
     )
 
     title = models.CharField(max_length=256)
@@ -38,7 +39,7 @@ class Task(models.Model):
 class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="comments")
     text = models.TextField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
     media = models.FileField(upload_to="comments_media/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

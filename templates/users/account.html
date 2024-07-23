@@ -2,8 +2,15 @@
 
 {% block content %}
 <div class="container mt-3">
-    <h2>{{user.username}}</h2>
-    Joined: {{user.date_joined}} <br>
-    Password: {{user.password}}
+    <h2>Аккаунт</h2>
+    <div class="card bg-light w-100 mt-3">
+        <div class="card-header text-bg-info fs-2">Інформація</div>
+        <div class="card-body fs-5">
+            <p><strong>Нікнейм</strong>: {{user.username}}</p>
+            <p><strong>На платформі з</strong>: {{user.date_joined.date}}</p>
+            <p><strong>Створенно завдань</strong>: {{user.tasks.all|length}}</p>
+            <p><strong>Створенно коментарів</strong>: {{user.comments.all|length}}</p>
+        </div>
+    </div>
 </div>
 {% endblock %}

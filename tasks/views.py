@@ -127,6 +127,14 @@ class TaskDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
     template_name = "tasks/task_delete.html"
     success_url = reverse_lazy("tasks:task-list")
 
+    def form_valid(self, form):
+        task = self.get_object()
+
+        for comment in task.comments.all():
+            comment.delete()
+
+        return super().form_valid(form)
+
 
 class TaskCompleteView(LoginRequiredMixin, UserIsOwnerMixin, View):
     def get(self, request, *args, **kwargs):

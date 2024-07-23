@@ -18,17 +18,17 @@ class TaskForm(forms.ModelForm):
 
 class TaskFilterForm(forms.Form):
     STATUS_CHOICES = (
-        ("", "All"),
-        ("todo", "To Do"),
-        ("in_progress", "In Progress"),
-        ("done", "Done")
+        ("", "Всі"),
+        ("todo", "Назначено"),
+        ("in_progress", "В процесі"),
+        ("done", "Виконано")
     )
 
     PRIORITY_CHOICES = (
-        ("", "All"),
-        ("low", "Low"),
-        ("medium", "Medium"),
-        ("high", "High")
+        ("", "Всі"),
+        ("low", "Низький"),
+        ("medium", "Середній"),
+        ("high", "Високий")
     )
 
     status = forms.ChoiceField(choices=STATUS_CHOICES, required=False, label="Статус")
