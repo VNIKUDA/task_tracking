@@ -71,7 +71,7 @@
                     </div>
             
                     <div class="btn-group">
-                        <form action="{% url 'tasks:comment-like' comment.pk %}" method="post" class="d-flex align-items-center flex-column">
+                        <form hx-post="{% url 'tasks:comment-like-toggle' comment.pk %}" hx-swap="outerHTML" method="post" class="d-flex align-items-center flex-column">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm border-0" title="Лайк">
                                 {% if comment in liked_comments %}
@@ -84,6 +84,7 @@
                                     </svg>
                                 {% endif %}
                             </button>
+                            <!-- hx-get="{% url 'tasks:comment-likes' comment.pk %}" hx-trigger="every 3s"  -->
                             <span style="font-size: x-small;">{{comment.likes.all|length}}</span>          
                         </form>
             

@@ -3,6 +3,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 import datetime
@@ -17,8 +19,10 @@ class TaskListView(ListView):
     template_name = "tasks/task_list.html"
     paginate_by = 7
 
+
     def get(self, request, *args, **kwargs) -> HttpResponse:
         return super().get(request, *args, **kwargs)
+
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -52,6 +56,7 @@ class TaskListView(ListView):
 
         return queryset
     
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = TaskFilterForm(self.request.GET)
@@ -73,6 +78,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "task"
     template_name = "tasks/task_detail.html"
 
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         task = self.get_object()
@@ -89,6 +95,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
 
         return context
     
+
     def post(self, request, *args, **kwargs):
         form = CommentForm(request.POST, request.FILES)
         task = self.get_object()
@@ -100,6 +107,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
             form.save()
 
         return redirect(reverse_lazy("tasks:task-detail", kwargs={"pk": task.id}))
+
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = models.Task
@@ -118,6 +126,7 @@ class TaskUpdateView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
     template_name = "tasks/task_update_form.html"
     form_class = TaskForm
 
+
     def get_success_url(self) -> str:
         return reverse_lazy("tasks:task-detail", kwargs={"pk": self.object.id})
 
@@ -126,6 +135,7 @@ class TaskDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
     model = models.Task
     template_name = "tasks/task_delete.html"
     success_url = reverse_lazy("tasks:task-list")
+
 
     def form_valid(self, form):
         task = self.get_object()
@@ -147,10 +157,12 @@ class TaskCompleteView(LoginRequiredMixin, UserIsOwnerMixin, View):
 
         return HttpResponseRedirect(reverse_lazy("tasks:task-list")+body_args)
     
+
     def get_object(self):
         task_id = self.kwargs.get("pk")
         return get_object_or_404(models.Task, pk=task_id)
     
+
 class TaskInProgressView(LoginRequiredMixin, UserIsOwnerMixin, View):
     def get(self, request, *args, **kwargs):
         task = self.get_object()
@@ -162,10 +174,12 @@ class TaskInProgressView(LoginRequiredMixin, UserIsOwnerMixin, View):
 
         return HttpResponseRedirect(reverse_lazy("tasks:task-list")+body_args)
     
+
     def get_object(self):
         task_id = self.kwargs.get("pk")
         return get_object_or_404(models.Task, pk=task_id)
     
+
 class TaskToDoView(LoginRequiredMixin, UserIsOwnerMixin, View):
     def get(self, request, *args, **kwargs):
         task = self.get_object()
@@ -177,6 +191,7 @@ class TaskToDoView(LoginRequiredMixin, UserIsOwnerMixin, View):
 
         return HttpResponseRedirect(reverse_lazy("tasks:task-list")+body_args)
     
+
     def get_object(self):
         task_id = self.kwargs.get("pk")
         return get_object_or_404(models.Task, pk=task_id)
@@ -188,12 +203,14 @@ class CommentUpdateView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
     template_name = "tasks/comment_update.html"
     context_object_name = "comment"
 
+
     def get_success_url(self):
         comment = self.get_object()
         task = comment.task
 
         return reverse_lazy("tasks:task-detail", kwargs={"pk": task.id}) + f"#{comment.pk}"
     
+
     def form_valid(self, form):
         comment = self.get_object()
 
@@ -202,10 +219,12 @@ class CommentUpdateView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
 
         return super().form_valid(form)
 
+
 class CommentDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
     model = models.Comment
     template_name = "tasks/comment_delete.html"
     context_object_name = "comment"
+
 
     def get_success_url(self):
         comment = self.get_object()
@@ -213,26 +232,35 @@ class CommentDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
 
         return reverse_lazy("tasks:task-detail", kwargs={"pk": task.id})
 
-class CommentLikeView(LoginRequiredMixin, View):
+
+class CommentLikeToggleView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         comment = self.get_object()
 
-        try:
-            like = models.Like.objects.get(comment=comment, author=request.user)
+        like, created = models.Like.objects.get_or_create(comment=comment, author=request.user)
+        if not created:
             like.delete()
 
-            return HttpResponseRedirect(reverse_lazy("tasks:task-detail", kwargs={"pk": comment.task.pk}))
-        
-        except models.Like.DoesNotExist:
-            like = models.Like(
-                comment=comment,
-                author=request.user
-            )
-            like.save()
+        context = {
+            "comment": comment,
+            "is_liked": any(like in comment.likes.all() for like in self.request.user.like_comments.all())
+        }
 
-            return HttpResponseRedirect(reverse_lazy("tasks:task-detail", kwargs={"pk": comment.task.pk}))
+        return render(request, "tasks/comment_like.html", context=context)
 
 
     def get_object(self):
         comment_id = self.kwargs.get("pk")
         return get_object_or_404(models.Comment, pk=comment_id)
+
+class CommentLikesView(GenericAPIView):
+    def get_object(self):
+        pk = self.request.GET.get("pk")
+        comment = models.Comment.objects.get(pk=pk)
+
+        return comment
+
+    def get(self, requset, pk):
+        comment = self.get_object()
+
+        return Response(len(comment.likes.all()))

@@ -13,7 +13,8 @@ urlpatterns = [
 
     path("comments/<int:pk>/update/", views.CommentUpdateView.as_view(), name="comment-update"),
     path("comments/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment-delete"),
-    path("comments/<int:pk>/like/", views.CommentLikeView.as_view(), name="comment-like")
+    path("comments/<int:pk>/like/", views.CommentLikeToggleView.as_view(), name="comment-like-toggle"),
+    path("comments/<int:pk>/likes/", views.CommentLikesView.as_view(), name="comment-likes")
 ]
 
 app_name = "tasks"
