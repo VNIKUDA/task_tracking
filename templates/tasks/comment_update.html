@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container mt-3">
     <h2>Оновлення коментаря</h2>
-    <form action="" method="post" class="form-control my-3 bg-light">
+    <form action="" method="post" class="form-control my-3 bg-light" enctype="multipart/form-data">
         {% csrf_token %}
         {{form.as_p}}
         <button type="submit" class="btn btn-warning">Оновити</button>

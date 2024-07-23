@@ -1,3 +1,4 @@
+from django.forms import BaseModelForm
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
@@ -89,7 +90,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
         return context
     
     def post(self, request, *args, **kwargs):
-        form = CommentForm(request.POST)
+        form = CommentForm(request.POST, request.FILES)
         task = self.get_object()
 
         if form.is_valid():
@@ -107,7 +108,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("tasks:task-list")
 
     def form_valid(self, form):
-        form.instance.creator = self.request.user
+        form.instance.author = self.request.user
         
         return super().form_valid(form)
     
@@ -184,6 +185,14 @@ class CommentUpdateView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
         task = comment.task
 
         return reverse_lazy("tasks:task-detail", kwargs={"pk": task.id}) + f"#{comment.pk}"
+    
+    def form_valid(self, form):
+        comment = self.get_object()
+
+        if form.instance.media.name != comment.media.name:
+            comment.media.delete()
+
+        return super().form_valid(form)
 
 class CommentDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
     model = models.Comment
