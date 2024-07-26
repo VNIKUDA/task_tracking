@@ -1,7 +1,9 @@
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.views.generic import DetailView, CreateView
 from django.contrib.auth import views as auth_views
+from django.core.exceptions import PermissionDenied
 from users.forms import RegisterForm, LoginForm
 
 # Create your views here.
@@ -9,6 +11,12 @@ class UserDetailView(DetailView):
     model = User
     context_object_name = "user"
     template_name = "users/account.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.user != self.get_object():
+            raise PermissionDenied
+        
+        return super().get(request, *args, **kwargs)
 
 
 class RegisterView(CreateView):

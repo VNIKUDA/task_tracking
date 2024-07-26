@@ -85,7 +85,7 @@
                                 {% endif %}
                             </button>
                             <!-- hx-get="{% url 'tasks:comment-likes' comment.pk %}" hx-trigger="every 3s"  -->
-                            <span style="font-size: x-small;">{{comment.likes.all|length}}</span>          
+                            <p hx-get="{% url 'tasks:comment-likes' comment.pk %}" hx-swap="innerHTML" hx-trigger="every 60s" style="font-size: x-small;">{{comment.likes.all|length}}</p> 
                         </form>
             
                         <div class="dropend dropend-right">

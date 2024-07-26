@@ -1,10 +1,7 @@
-from django.forms import BaseModelForm
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 import datetime
@@ -253,14 +250,16 @@ class CommentLikeToggleView(LoginRequiredMixin, View):
         comment_id = self.kwargs.get("pk")
         return get_object_or_404(models.Comment, pk=comment_id)
 
-class CommentLikesView(GenericAPIView):
-    def get_object(self):
-        pk = self.request.GET.get("pk")
-        comment = models.Comment.objects.get(pk=pk)
-
-        return comment
-
-    def get(self, requset, pk):
+class CommentLikesView(View):
+    def get(self, requset, *args, **kwargs):
         comment = self.get_object()
 
-        return Response(len(comment.likes.all()))
+        response = ""
+        if comment:
+            response = f'{len(comment.likes.all())}'
+
+        return HttpResponse(response)
+    
+    def get_object(self):
+        comment_id = self.kwargs.get("pk")
+        return get_object_or_404(models.Comment, pk=comment_id)
