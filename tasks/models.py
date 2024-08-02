@@ -3,6 +3,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 
+def comment_media_path(instance, filename):
+    comment_id = hash(f"{instance.created_at} {filename}")
+    return f"comments/comment{comment_id}/{filename}"
+
 # Create your models here.
 class Task(models.Model):
 
@@ -40,7 +44,7 @@ class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="comments")
     text = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
-    media = models.FileField(upload_to="comments_media/", blank=True, null=True)
+    media = models.FileField(upload_to=comment_media_path, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
