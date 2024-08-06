@@ -35,7 +35,7 @@
                 </div>
             </li>   
 
-            <li class="list-group-item rounded-top-0 w-75">{{task.description}}</li>
+            <li class="list-group-item rounded-top-0 w-75">{{task.description|linebreaksbr}}</li>
         </ul>
     </div>
     
@@ -129,7 +129,7 @@
 
                 <div class="card-body">
                     <p class="card-text">
-                        {{comment.text}}
+                        {{comment.text|linebreaksbr}}
                     </p>
                 </div>
             </div>

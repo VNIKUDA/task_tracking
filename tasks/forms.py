@@ -6,6 +6,7 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["title", "description", "status", "priority", "due_date"]
         widgets = {
+            "desctiption": forms.Textarea(attrs={"type": "text"}),
             "due_date": forms.DateInput(attrs={'type':"date"})
         }
 
@@ -50,6 +51,7 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ["text", "media"]
         widgets = {
+            "text": forms.Textarea(attrs={"type": "text"}),
             "media": forms.FileInput()
         }
 
