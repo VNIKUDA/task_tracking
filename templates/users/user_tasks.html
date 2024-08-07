@@ -1,0 +1,26 @@
+{% for task in tasks %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="d-flex h-25 gap-3">
+            <a href="{% url 'tasks:task-detail' task.pk %}" class="link link-underline link-underline-opacity-0">{{task.title}}</a>
+            <div>
+                <span class="badge bg-primary">{{task.get_status_display}}</span>
+                <span class="badge bg-secondary">{{task.get_priority_display}}</span> 
+            </div>
+        </div>
+    
+        <div class="dropdown">
+            <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Встановити статус
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{% url 'tasks:task-to-do' task.pk %}?{{filters}}page={{page_obj.number}}">Назначено</a></li>
+            <li><a class="dropdown-item" href="{% url 'tasks:task-in-progress' task.pk %}?{{filters}}page={{page_obj.number}}">В процесі</a></li>
+            <li><a class="dropdown-item" href="{% url 'tasks:task-complete' task.pk %}?{{filters}}page={{page_obj.number}}">Виконано</a></li>
+            </ul>
+        </div>
+    </li>
+{% endfor %}
+
+{% if tasks_left %}
+    <button type="button" htmx-post="{% url 'users:account' user.username %}"></button>
+{% endif %}

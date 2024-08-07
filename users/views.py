@@ -1,10 +1,10 @@
-from django.db.models.base import Model as Model
-from django.db.models.query import QuerySet
-from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.views.generic import DetailView, CreateView
 from django.contrib.auth import views as auth_views
+from django.contrib.auth import login
 from users.forms import RegisterForm, LoginForm
 
 # Create your views here.
@@ -21,12 +21,17 @@ class UserDetailView(DetailView):
         return user
 
 
-
 class RegisterView(CreateView):
     model = User
     form_class = RegisterForm
     template_name = "users/register.html"
     success_url = reverse_lazy("tasks:task-list")
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+
+        return HttpResponseRedirect(self.success_url)
 
 
 class LoginView(auth_views.LoginView):
