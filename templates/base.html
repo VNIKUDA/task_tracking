@@ -11,7 +11,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-default navbar-expand-lg navbar-light bg-light sticky-top">
         <div class="d-flex justify-content-between w-100">
             <a href="{% url 'tasks:task-list' %}" class="navbar-brand mx-3">Головна</a>
             <div class="d-flex me-3 gap-3">
@@ -58,8 +58,7 @@
                         {% endif %}
                     </ul>
                 </div>
-            </div>
-
+            </div> 
         </div>
     </nav>
 
@@ -69,5 +68,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

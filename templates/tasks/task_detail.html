@@ -21,11 +21,7 @@
         <ul class="list-group list-group-horizontal fs-5">
             <li class="list-group-item rounded-top-0 w-25">
                 <div>
-                    <p>
-                        <b class="fw-medium">Автор завдання:  
-                        <a class="text-decoration-none" href="{% url 'users:account' task.author.username %}">{{task.author.username}}</a></b>
-                    </p>
-                    <hr>
+                    <!-- <hr> -->
                     <p><b class="fw-medium">Статус</b>: <br> <span class="badge bg-primary">{{task.get_status_display}}</span></p>
                     <p><b class="fw-medium">Пріорітет</b>: <br> <span class="badge bg-secondary">{{task.get_priority_display}}</span></p>
                     <p><b class="fw-medium">Термін виконання</b>: <br> 
@@ -33,10 +29,20 @@
                             {% if task.due_date %}
                                 {{task.due_date}}
                             {% else %}
-                                Немає
+                            Немає
                             {% endif %}
                         </span>
                     </p>
+                    <hr>
+                    <small>
+                        <p>
+                            <b class="fw-medium">Автор завдання:  
+                            <a class="text-decoration-none" href="{% url 'users:account' task.author.username %}">{{task.author.username}}</a></b>
+                        </p>
+                        <p>
+                            <b class="fw-medium">Створенно: {{task.created}}</b>
+                        </p>
+                    </small>
                 </div>
             </li>   
 
@@ -68,7 +74,6 @@
                                 <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
                             </svg>
                             <a class="text-decoration-none text-dark" href="{% url 'users:account' comment.author.username %}">{{comment.author.username}}</a>
-                             
                         </span>
                         
                         <h6 class="card-subtitle text-muted">
