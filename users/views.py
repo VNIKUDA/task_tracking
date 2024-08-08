@@ -6,12 +6,22 @@ from django.views.generic import DetailView, CreateView
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import login
 from users.forms import RegisterForm, LoginForm
+from tasks.models import Task
 
 # Create your views here.
 class UserDetailView(DetailView):
     model = User
     context_object_name = "user"
     template_name = "users/account.html"
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.get_object()
+
+        context["tasks"] = Task.objects.filter(author=user)
+
+        return context
 
 
     def get_object(self, *args):

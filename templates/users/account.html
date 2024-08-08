@@ -1,34 +1,81 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-3">
+<div class="container my-3">
     <h2>Аккаунт</h2>
 
     <!-- INFO -->
     <div class="card bg-light w-100 mt-3">
-        <div class="card-header text-bg-info fs-2">Інформація</div>
-        <div class="card-body fs-5">
-            <div class="d-flex">
-                <div class="w-50">
-                    <p><strong>Нікнейм</strong>: {{user.username}}</p>
-                    <p><strong>На платформі з</strong>: {{user.date_joined.date}}</p>
-                </div>
-                <div class="w-50">
-                    <p><strong>Створенно завдань</strong>: {{user.tasks.all|length}}</p>
-                    <p><strong>Створенно коментарів</strong>: {{user.comments.all|length}}</p>
+        <div class="card-header text-bg-info fs-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>Інформація</span>
+                <button type="button" data-bs-toggle="collapse" data-bs-target="#info-card" aria-expanded="true" class="btn border-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-caret-down-square" viewBox="0 0 16 16">
+                        <path d="M3.626 6.832A.5.5 0 0 1 4 6h8a.5.5 0 0 1 .374.832l-4 4.5a.5.5 0 0 1-.748 0z"/>
+                        <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="collapse show" id="info-card">
+            <div class="card-body fs-5">
+                <div class="d-flex">
+                    <div class="w-50">
+                        <p><strong>Нікнейм</strong>: {{user.username}}</p>
+                        <p><strong>На платформі з</strong>: {{user.date_joined.date}}</p>
+                    </div>
+                    <div class="w-50">
+                        <p><strong>Створенно завдань</strong>: {{user.tasks.all|length}}</p>
+                        <p><strong>Створенно коментарів</strong>: {{user.comments.all|length}}</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- TASKS
+    <!-- TASKS -->
     <div class="card bg-light w-100 mt-3">
-        <div class="card-header text-bg-success bg-opacity-75 fs-2">Створенні завдання</div>
-        <div class="card-body">
-            <ul class="list-group" id="tasks">
-
-            </ul>
+        <div class="card-header text-bg-success bg-opacity-75 fs-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>Створенні завдання</span>
+                <button type="button" data-bs-toggle="collapse" data-bs-target="#tasks-card" aria-expanded="true" class="btn border-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" class="bi bi-caret-down-square" viewBox="0 0 16 16">
+                        <path d="M3.626 6.832A.5.5 0 0 1 4 6h8a.5.5 0 0 1 .374.832l-4 4.5a.5.5 0 0 1-.748 0z"/>
+                        <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
-    </div> -->
+        <div class="collapse show" id="tasks-card">
+            <div class="card-body p-2">
+                <ul class="list-group">
+                    {% for task in tasks %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex h-25 gap-3">
+                                <a href="{% url 'tasks:task-detail' task.pk %}" class="link link-underline link-underline-opacity-0">{{task.title}}</a>
+                                <div>
+                                    <span class="badge bg-primary">{{task.get_status_display}}</span>
+                                    <span class="badge bg-secondary">{{task.get_priority_display}}</span> 
+                                </div>
+                            </div>
+    
+                            <div class="dropdown">
+                                <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Встановити статус
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'tasks:task-to-do' task.pk %}?{{filters}}page={{page_obj.number}}">Назначено</a></li>
+                                <li><a class="dropdown-item" href="{% url 'tasks:task-in-progress' task.pk %}?{{filters}}page={{page_obj.number}}">В процесі</a></li>
+                                <li><a class="dropdown-item" href="{% url 'tasks:task-complete' task.pk %}?{{filters}}page={{page_obj.number}}">Виконано</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-center">Користувач ще не має створених завдань</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

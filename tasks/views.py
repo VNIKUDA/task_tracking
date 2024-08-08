@@ -110,13 +110,17 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
     model = models.Task
     template_name = "tasks/task_form.html"
     form_class = TaskForm
-    success_url = reverse_lazy("tasks:task-list")
+
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         
         return super().form_valid(form)
-    
+
+
+    def get_success_url(self):
+        return reverse_lazy("tasks:task-detail", kwargs={"pk": self.object.id})
+
 
 class TaskUpdateView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
     model = models.Task
@@ -149,10 +153,8 @@ class TaskCompleteView(LoginRequiredMixin, UserIsOwnerMixin, View):
 
         task.status = "done"
         task.save()
-        
-        body_args = "?" + "".join([f"{key}={value}&" for key, value in request.GET.items()])[:-1]
 
-        return HttpResponseRedirect(reverse_lazy("tasks:task-list")+body_args)
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     
 
     def get_object(self):
@@ -167,9 +169,7 @@ class TaskInProgressView(LoginRequiredMixin, UserIsOwnerMixin, View):
         task.status = "in_progress"
         task.save()
 
-        body_args = "?" + "".join([f"{key}={value}&" for key, value in request.GET.items()])[:-1]
-
-        return HttpResponseRedirect(reverse_lazy("tasks:task-list")+body_args)
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     
 
     def get_object(self):
@@ -184,9 +184,7 @@ class TaskToDoView(LoginRequiredMixin, UserIsOwnerMixin, View):
         task.status = "todo"
         task.save()
 
-        body_args = "?" + "".join([f"{key}={value}&" for key, value in request.GET.items()])[:-1]
-
-        return HttpResponseRedirect(reverse_lazy("tasks:task-list")+body_args)
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     
 
     def get_object(self):
