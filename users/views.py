@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
-from django.views.generic import DetailView, CreateView
+from django.views.generic import DetailView, CreateView, TemplateView
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import login
 from users.forms import RegisterForm, LoginForm
@@ -52,3 +52,7 @@ class LoginView(auth_views.LoginView):
 
 class LogoutView(auth_views.LogoutView):
     pass
+
+
+class PermissionDeniedView(TemplateView):
+    template_name = "users/permission_denied.html"

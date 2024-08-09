@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="red" class="bi bi-ban" viewBox="0 0 16 16">
+            <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+        </svg>
+        <br>
+        <h1>
+            ERROR 403
+        </h1>
+        <p class="h4 text-center lh-base mt-5">
+            Вам відмовленно у доступі для взаємодії з цим об'єктом. <br>
+            <a href="{% url 'tasks:task-list' %}" class="text-decoration-none">Перейти на головну</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
